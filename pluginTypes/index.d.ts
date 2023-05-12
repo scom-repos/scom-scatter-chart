@@ -104,6 +104,37 @@ declare module "@scom/scom-scatter-chart/assets.ts" {
     };
     export default _default;
 }
+/// <amd-module name="@scom/scom-scatter-chart/data.json.ts" />
+declare module "@scom/scom-scatter-chart/data.json.ts" {
+    const _default_1: {
+        defaultBuilderData: {
+            apiEndpoint: string;
+            options: {
+                title: string;
+                options: {
+                    xColumn: {
+                        key: string;
+                        type: string;
+                    };
+                    yColumns: string[];
+                    seriesOptions: {
+                        key: string;
+                        title: string;
+                    }[];
+                    xAxis: {
+                        title: string;
+                        tickFormat: string;
+                    };
+                    yAxis: {
+                        labelFormat: string;
+                        position: string;
+                    };
+                };
+            };
+        };
+    };
+    export default _default_1;
+}
 /// <amd-module name="@scom/scom-scatter-chart" />
 declare module "@scom/scom-scatter-chart" {
     import { Module, ControlElement, Container, IDataSchema } from '@ijstech/components';
@@ -127,9 +158,7 @@ declare module "@scom/scom-scatter-chart" {
         private lbDescription;
         private chartData;
         private apiEndpoint;
-        private _oldData;
         private _data;
-        private oldTag;
         tag: any;
         defaultEdit: boolean;
         readonly onConfirm: () => Promise<void>;
