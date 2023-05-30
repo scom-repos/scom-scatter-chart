@@ -190,30 +190,28 @@ define("@scom/scom-scatter-chart/data.json.ts", ["require", "exports"], function
     exports.default = {
         defaultBuilderData: {
             apiEndpoint: "/dune/query/2360905",
+            title: 'ETH Withdrawals after Shanghai Unlock vs ETH price',
             options: {
-                title: 'ETH Withdrawals after Shanghai Unlock vs ETH price',
-                options: {
-                    xColumn: {
-                        key: 'time',
-                        type: 'time'
-                    },
-                    yColumns: [
-                        'eth_price',
-                    ],
-                    seriesOptions: [
-                        {
-                            key: 'eth_price',
-                            title: 'ETH Price'
-                        }
-                    ],
-                    xAxis: {
-                        title: 'Date',
-                        tickFormat: 'MMM DD'
-                    },
-                    yAxis: {
-                        labelFormat: '$0[].0a',
-                        position: 'left'
+                xColumn: {
+                    key: 'time',
+                    type: 'time'
+                },
+                yColumns: [
+                    'eth_price',
+                ],
+                seriesOptions: [
+                    {
+                        key: 'eth_price',
+                        title: 'ETH Price'
                     }
+                ],
+                xAxis: {
+                    title: 'Date',
+                    tickFormat: 'MMM DD'
+                },
+                yAxis: {
+                    labelFormat: '$0[].0a',
+                    position: 'left'
                 }
             }
         }
@@ -223,12 +221,126 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const Theme = components_3.Styles.Theme.ThemeVars;
+    const options = {
+        type: 'object',
+        properties: {
+            xColumn: {
+                type: 'object',
+                title: 'X column',
+                required: true,
+                properties: {
+                    key: {
+                        type: 'string',
+                        required: true
+                    },
+                    type: {
+                        type: 'string',
+                        enum: ['time', 'category'],
+                        required: true
+                    }
+                }
+            },
+            yColumns: {
+                type: 'array',
+                title: 'Y columns',
+                required: true,
+                items: {
+                    type: 'string'
+                }
+            },
+            groupBy: {
+                type: 'string'
+            },
+            smooth: {
+                type: 'boolean'
+            },
+            stacking: {
+                type: 'boolean'
+            },
+            legend: {
+                type: 'object',
+                title: 'Show Chart Legend',
+                properties: {
+                    show: {
+                        type: 'boolean'
+                    },
+                    scroll: {
+                        type: 'boolean'
+                    },
+                    position: {
+                        type: 'string',
+                        enum: ['top', 'bottom', 'left', 'right']
+                    }
+                }
+            },
+            showSymbol: {
+                type: 'boolean'
+            },
+            showDataLabels: {
+                type: 'boolean'
+            },
+            percentage: {
+                type: 'boolean'
+            },
+            xAxis: {
+                type: 'object',
+                properties: {
+                    title: {
+                        type: 'string'
+                    },
+                    tickFormat: {
+                        type: 'string'
+                    },
+                    reverseValues: {
+                        type: 'boolean'
+                    }
+                }
+            },
+            yAxis: {
+                type: 'object',
+                properties: {
+                    title: {
+                        type: 'string'
+                    },
+                    tickFormat: {
+                        type: 'string'
+                    },
+                    labelFormat: {
+                        type: 'string'
+                    },
+                    position: {
+                        type: 'string',
+                        enum: ['left', 'right']
+                    }
+                }
+            },
+            seriesOptions: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        key: {
+                            type: 'string',
+                            required: true
+                        },
+                        title: {
+                            type: 'string'
+                        },
+                        color: {
+                            type: 'string',
+                            format: 'color'
+                        }
+                    }
+                }
+            }
+        }
+    };
     let ScomScatterChart = class ScomScatterChart extends components_3.Module {
         constructor(parent, options) {
             super(parent, options);
             this.chartData = [];
             this.apiEndpoint = '';
-            this._data = { apiEndpoint: '', options: undefined };
+            this._data = { apiEndpoint: '', title: '', options: undefined };
             this.tag = {};
             this.defaultEdit = true;
         }
@@ -258,25 +370,7 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
             this.height = this.tag.height || 500;
             this.onUpdateBlock();
         }
-        // getConfigSchema() {
-        //   return this.getThemeSchema();
-        // }
-        // onConfigSave(config: any) {
-        //   this.tag = config;
-        //   this.onUpdateBlock();
-        // }
-        // async edit() {
-        //   // this.chartContainer.visible = false
-        // }
-        // async confirm() {
-        //   this.onUpdateBlock();
-        //   // this.chartContainer.visible = true
-        // }
-        // async discard() {
-        //   // this.chartContainer.visible = true
-        // }
-        // async config() { }
-        getPropertiesSchema(readOnly) {
+        getPropertiesSchema() {
             const propertiesSchema = {
                 type: 'object',
                 properties: {
@@ -285,137 +379,46 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
                         title: 'API Endpoint',
                         required: true
                     },
-                    options: {
-                        type: 'object',
-                        properties: {
-                            title: {
-                                type: 'string',
-                                required: true
-                            },
-                            description: {
-                                type: 'string'
-                            },
-                            options: {
-                                type: 'object',
-                                properties: {
-                                    xColumn: {
-                                        type: 'object',
-                                        title: 'X column',
-                                        required: true,
-                                        properties: {
-                                            key: {
-                                                type: 'string',
-                                                required: true
-                                            },
-                                            type: {
-                                                type: 'string',
-                                                enum: ['time', 'category'],
-                                                required: true
-                                            }
-                                        }
-                                    },
-                                    yColumns: {
-                                        type: 'array',
-                                        title: 'Y columns',
-                                        required: true,
-                                        items: {
-                                            type: 'string'
-                                        }
-                                    },
-                                    groupBy: {
-                                        type: 'string'
-                                    },
-                                    smooth: {
-                                        type: 'boolean'
-                                    },
-                                    stacking: {
-                                        type: 'boolean'
-                                    },
-                                    legend: {
-                                        type: 'object',
-                                        title: 'Show Chart Legend',
-                                        properties: {
-                                            show: {
-                                                type: 'boolean'
-                                            },
-                                            scroll: {
-                                                type: 'boolean'
-                                            },
-                                            position: {
-                                                type: 'string',
-                                                enum: ['top', 'bottom', 'left', 'right']
-                                            }
-                                        }
-                                    },
-                                    showSymbol: {
-                                        type: 'boolean'
-                                    },
-                                    showDataLabels: {
-                                        type: 'boolean'
-                                    },
-                                    percentage: {
-                                        type: 'boolean'
-                                    },
-                                    xAxis: {
-                                        type: 'object',
-                                        properties: {
-                                            title: {
-                                                type: 'string'
-                                            },
-                                            tickFormat: {
-                                                type: 'string'
-                                            },
-                                            reverseValues: {
-                                                type: 'boolean'
-                                            }
-                                        }
-                                    },
-                                    yAxis: {
-                                        type: 'object',
-                                        properties: {
-                                            title: {
-                                                type: 'string'
-                                            },
-                                            tickFormat: {
-                                                type: 'string'
-                                            },
-                                            labelFormat: {
-                                                type: 'string'
-                                            },
-                                            position: {
-                                                type: 'string',
-                                                enum: ['left', 'right']
-                                            }
-                                        }
-                                    },
-                                    seriesOptions: {
-                                        type: 'array',
-                                        items: {
-                                            type: 'object',
-                                            properties: {
-                                                key: {
-                                                    type: 'string',
-                                                    required: true
-                                                },
-                                                title: {
-                                                    type: 'string'
-                                                },
-                                                color: {
-                                                    type: 'string',
-                                                    format: 'color'
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                    title: {
+                        type: 'string',
+                        required: true
+                    },
+                    description: {
+                        type: 'string'
+                    },
+                    options
+                }
+            };
+            return propertiesSchema;
+        }
+        getGeneralSchema() {
+            const propertiesSchema = {
+                type: 'object',
+                required: ['apiEndpoint', 'title'],
+                properties: {
+                    apiEndpoint: {
+                        type: 'string'
+                    },
+                    title: {
+                        type: 'string'
+                    },
+                    description: {
+                        type: 'string'
                     }
                 }
             };
             return propertiesSchema;
         }
-        getThemeSchema(readOnly) {
+        getAdvanceSchema() {
+            const propertiesSchema = {
+                type: 'object',
+                properties: {
+                    options
+                }
+            };
+            return propertiesSchema;
+        }
+        getThemeSchema() {
             const themeSchema = {
                 type: 'object',
                 properties: {
@@ -440,25 +443,31 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
             };
             return themeSchema;
         }
-        _getActions(propertiesSchema, themeSchema) {
+        _getActions(propertiesSchema, themeSchema, advancedSchema) {
             const actions = [
                 {
                     name: 'Settings',
                     icon: 'cog',
                     command: (builder, userInputData) => {
-                        let _oldData = { apiEndpoint: '', options: undefined };
+                        let _oldData = { apiEndpoint: '', title: '', options: undefined };
                         return {
                             execute: async () => {
                                 _oldData = Object.assign({}, this._data);
-                                if ((userInputData === null || userInputData === void 0 ? void 0 : userInputData.apiEndpoint) !== undefined)
-                                    this._data.apiEndpoint = userInputData.apiEndpoint;
-                                if ((userInputData === null || userInputData === void 0 ? void 0 : userInputData.options) !== undefined)
-                                    this._data.options = userInputData.options;
+                                if (userInputData) {
+                                    if (advancedSchema) {
+                                        this._data = Object.assign(Object.assign({}, this._data), userInputData);
+                                    }
+                                    else {
+                                        this._data = Object.assign({}, userInputData);
+                                    }
+                                }
                                 if (builder === null || builder === void 0 ? void 0 : builder.setData)
                                     builder.setData(this._data);
                                 this.setData(this._data);
                             },
                             undo: () => {
+                                if (advancedSchema)
+                                    _oldData = Object.assign(Object.assign({}, _oldData), { options: this._data.options });
                                 if (builder === null || builder === void 0 ? void 0 : builder.setData)
                                     builder.setData(_oldData);
                                 this.setData(_oldData);
@@ -467,7 +476,7 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
                         };
                     },
                     userInputDataSchema: propertiesSchema,
-                    userInputUISchema: {
+                    userInputUISchema: advancedSchema ? undefined : {
                         type: 'VerticalLayout',
                         elements: [
                             {
@@ -477,15 +486,15 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
                             },
                             {
                                 type: 'Control',
-                                scope: '#/properties/options/properties/title'
+                                scope: '#/properties/title'
                             },
                             {
                                 type: 'Control',
-                                scope: '#/properties/options/properties/description'
+                                scope: '#/properties/description'
                             },
                             {
                                 type: 'Control',
-                                scope: '#/properties/options/properties/options',
+                                scope: '#/properties/options',
                                 options: {
                                     detail: {
                                         type: 'VerticalLayout'
@@ -525,6 +534,49 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
                     userInputDataSchema: themeSchema
                 }
             ];
+            if (advancedSchema) {
+                const advanced = {
+                    name: 'Advanced',
+                    icon: 'sliders-h',
+                    command: (builder, userInputData) => {
+                        let _oldData = {};
+                        return {
+                            execute: async () => {
+                                var _a;
+                                _oldData = Object.assign({}, (_a = this._data) === null || _a === void 0 ? void 0 : _a.options);
+                                if ((userInputData === null || userInputData === void 0 ? void 0 : userInputData.options) !== undefined)
+                                    this._data.options = userInputData.options;
+                                if (builder === null || builder === void 0 ? void 0 : builder.setData)
+                                    builder.setData(this._data);
+                                this.setData(this._data);
+                            },
+                            undo: () => {
+                                this._data.options = Object.assign({}, _oldData);
+                                if (builder === null || builder === void 0 ? void 0 : builder.setData)
+                                    builder.setData(this._data);
+                                this.setData(this._data);
+                            },
+                            redo: () => { }
+                        };
+                    },
+                    userInputDataSchema: advancedSchema,
+                    userInputUISchema: {
+                        type: 'VerticalLayout',
+                        elements: [
+                            {
+                                type: 'Control',
+                                scope: '#/properties/options',
+                                options: {
+                                    detail: {
+                                        type: 'VerticalLayout'
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                };
+                actions.push(advanced);
+            }
             return actions;
         }
         getConfigurators() {
@@ -534,7 +586,7 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
                     name: 'Builder Configurator',
                     target: 'Builders',
                     getActions: () => {
-                        return this._getActions(this.getPropertiesSchema(), this.getThemeSchema());
+                        return this._getActions(this.getGeneralSchema(), this.getThemeSchema(), this.getAdvanceSchema());
                     },
                     getData: this.getData.bind(this),
                     setData: async (data) => {
@@ -548,7 +600,7 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
                     name: 'Emdedder Configurator',
                     target: 'Embedders',
                     getActions: () => {
-                        return this._getActions(this.getPropertiesSchema(true), this.getThemeSchema(true));
+                        return this._getActions(this.getPropertiesSchema(), this.getThemeSchema());
                     },
                     getLinkParams: () => {
                         const data = this._data || {};
@@ -610,7 +662,7 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
         renderChart() {
             if ((!this.pnlChart && this._data.options) || !this._data.options)
                 return;
-            const { title, description, options } = this._data.options;
+            const { title, description, options } = this._data;
             this.lbTitle.caption = title;
             this.lbDescription.caption = description;
             this.lbDescription.visible = !!description;
@@ -792,6 +844,7 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
                     },
                     axisLabel: {
                         fontSize: 10,
+                        hideOverlap: true,
                         formatter: (xAxis === null || xAxis === void 0 ? void 0 : xAxis.tickFormat) ? (value, index) => {
                             if (type === 'time') {
                                 return components_3.moment(value).format(xAxis.tickFormat);
