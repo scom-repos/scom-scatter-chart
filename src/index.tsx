@@ -136,6 +136,7 @@ const options = {
 }
 
 interface ScomScatterChartElement extends ControlElement {
+  lazyLoad?: boolean;
   data: IScatterChartConfig
 }
 
@@ -720,20 +721,23 @@ export default class ScomScatterChart extends Module {
 
   async init() {
     this.isReadyCallbackQueued = true;
-    this.updateTheme();
     super.init();
+    this.updateTheme();
     this.setTag({
       fontColor: currentTheme.text.primary,
       backgroundColor: currentTheme.background.main,
       darkShadow: false,
       height: 500
     })
-    this.classList.add(chartStyle);
     this.maxWidth = '100%';
     this.chartContainer.style.boxShadow = 'rgba(0, 0, 0, 0.16) 0px 1px 4px';
-    const data = this.getAttribute('data', true);
-    if (data) {
-      this.setData(data);
+    this.classList.add(chartStyle);
+    const lazyLoad = this.getAttribute('lazyLoad', true, false);
+    if (!lazyLoad) {
+      const data = this.getAttribute('data', true);
+      if (data) {
+        this.setData(data);
+      }
     }
     this.isReadyCallbackQueued = false;
     this.executeReadyCallback();

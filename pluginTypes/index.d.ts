@@ -136,6 +136,7 @@ declare module "@scom/scom-scatter-chart" {
     import { Module, ControlElement, Container, IDataSchema } from '@ijstech/components';
     import { IScatterChartConfig } from "@scom/scom-scatter-chart/global/index.ts";
     interface ScomScatterChartElement extends ControlElement {
+        lazyLoad?: boolean;
         data: IScatterChartConfig;
     }
     global {
