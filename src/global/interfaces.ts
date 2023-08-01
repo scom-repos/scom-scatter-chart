@@ -1,3 +1,5 @@
+import { ModeType } from "@scom/scom-chart-data-source-setup"
+
 export interface IScatterChartOptions {
   xColumn?: {
     key: string,
@@ -34,8 +36,13 @@ export interface IScatterChartOptions {
 }
 
 export interface IScatterChartConfig {
-  apiEndpoint: string,
+  apiEndpoint?: string,
   title: string,
   description?: string,
-  options: IScatterChartOptions
+  options: IScatterChartOptions,
+  file?: {
+    cid: string,
+    name: string
+  },
+  mode: ModeType
 }
