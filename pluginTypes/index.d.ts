@@ -160,7 +160,6 @@ declare module "@scom/scom-scatter-chart" {
         private lbTitle;
         private lbDescription;
         private chartData;
-        private apiEndpoint;
         private _data;
         tag: any;
         defaultEdit: boolean;
