@@ -36,7 +36,8 @@ export interface IScatterChartOptions {
 }
 
 export interface IScatterChartConfig {
-  apiEndpoint?: string,
+  dataSource: string;
+  queryId: string;
   title: string,
   description?: string,
   options: IScatterChartOptions,
