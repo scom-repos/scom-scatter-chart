@@ -37,7 +37,8 @@ export interface IScatterChartOptions {
 
 export interface IScatterChartConfig {
   dataSource: string;
-  queryId: string;
+  queryId?: string;
+  apiEndpoint?: string;
   title: string,
   description?: string,
   options: IScatterChartOptions,
@@ -46,4 +47,10 @@ export interface IScatterChartConfig {
     name: string
   },
   mode: ModeType
+}
+
+export interface IFetchDataOptions {
+  dataSource: string;
+  queryId?: string;
+  apiEndpoint?: string;
 }
