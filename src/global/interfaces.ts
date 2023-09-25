@@ -28,6 +28,7 @@ export interface IScatterChartOptions {
     labelFormat?: string,
     position?: 'left' | 'right'
   },
+  mergeDuplicateData?: boolean,
   smooth?: boolean,
   legend?: {
     show?: boolean,
