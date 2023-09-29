@@ -565,6 +565,9 @@ export default class ScomScatterChart extends Module {
         }
       },
       legend: _legend,
+      grid: {
+        containLabel: true
+      },
       xAxis: {
         type: type,
         boundaryGap: false,
