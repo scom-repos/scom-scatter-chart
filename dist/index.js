@@ -1190,6 +1190,9 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
                     }
                 },
                 legend: _legend,
+                grid: {
+                    containLabel: true
+                },
                 xAxis: {
                     type: type,
                     boundaryGap: false,
