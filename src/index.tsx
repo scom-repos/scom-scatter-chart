@@ -13,7 +13,8 @@ import {
   ScatterChart,
   moment,
   Button,
-  IUISchema
+  IUISchema,
+  Modal
 } from '@ijstech/components';
 import { IScatterChartConfig, formatNumber, groupByCategory, extractUniqueTimes, concatUnique, groupArrayByKey, formatNumberByFormat, IScatterChartOptions, isNumeric } from './global/index';
 import { chartStyle, containerStyle, textStyle } from './index.css';
@@ -22,6 +23,7 @@ import configData from './data.json';
 import ScomChartDataSourceSetup, { ModeType, fetchContentByCID, callAPI, DataSource } from '@scom/scom-chart-data-source-setup';
 import { getBuilderSchema, getEmbedderSchema } from './formSchema';
 import ScomScatterChartDataOptionsForm from './dataOptionsForm';
+import types from './dts/index';
 const Theme = Styles.Theme.ThemeVars;
 
 interface ScomScatterChartElement extends ControlElement {
@@ -46,9 +48,21 @@ const DefaultData: IScatterChartConfig = {
   mode: ModeType.LIVE
 };
 
+interface ICustomWidget {
+  showConfigurator: (parent: Modal, prop: string) => void;
+  register: () => { types: string; defaultData: IScatterChartConfig };
+}
+
 @customModule
-@customElements('i-scom-scatter-chart')
-export default class ScomScatterChart extends Module {
+@customElements('i-scom-scatter-chart', {
+  icon: 'chart-area',
+  className: 'ScomScatterChart',
+  props: {
+    data: {type: 'object'}
+  },
+  events: {}
+})
+export default class ScomScatterChart extends Module implements ICustomWidget {
   private chartContainer: VStack;
   private vStackInfo: HStack;
   private pnlChart: Panel;
@@ -70,6 +84,30 @@ export default class ScomScatterChart extends Module {
 
   constructor(parent?: Container, options?: ScomScatterChartElement) {
     super(parent, options);
+  }
+
+  showConfigurator(parent: Modal, prop: string) {
+    const props = this._getDesignPropValue('data');
+    const builderTarget = this.getConfigurators().find((conf: any) => conf.target === 'Builders');
+    const dataAction = builderTarget?.getActions().find((action: any) => action.name === prop);
+    const self = this;
+    if (dataAction) {
+      const control = dataAction.customUI.render(props, (result: boolean, data: any) => {
+        parent.visible = false;
+        self.onConfigSave(data);
+      })
+      parent.item = control;
+      parent.visible = true;
+    }
+  }
+
+  register() {
+    return { types, defaultData: configData.defaultBuilderData as IScatterChartConfig };
+  }
+
+  private onConfigSave(data: IScatterChartConfig) {
+    this._setDesignPropValue('data', data);
+    this.setData({...data});
   }
 
   private getData() {
@@ -207,7 +245,8 @@ export default class ScomScatterChart extends Module {
               caption: 'Confirm',
               width: 'auto',
               height: 40,
-              font: { color: Theme.colors.primary.contrastText }
+              font: { color: Theme.colors.primary.contrastText },
+              padding: { top: '0.5rem', bottom: '0.5rem', left: '1rem', right: '1rem' }
             });
             hstackBtnConfirm.append(button);
             vstack.append(dataSourceSetup);
@@ -642,14 +681,13 @@ export default class ScomScatterChart extends Module {
     chart.drawChart();
   }
 
-  private resizeChart() {
+  resize() {
     if (this.pnlChart) {
       (this.pnlChart.firstChild as ScatterChart)?.resize();
     }
   }
 
   async init() {
-    this.isReadyCallbackQueued = true;
     super.init();
     this.updateTheme();
     this.setTag({
@@ -666,11 +704,10 @@ export default class ScomScatterChart extends Module {
         this.setData(data);
       }
     }
-    this.isReadyCallbackQueued = false;
     this.executeReadyCallback();
     window.addEventListener('resize', () => {
       setTimeout(() => {
-        this.resizeChart();
+        this.resize();
       }, 300);
     });
   }
