@@ -1113,7 +1113,7 @@ declare module "@scom/scom-scatter-chart" {
                 };
             };
         };
-        getChartData(): {
+        getChartData(options?: IScatterChartOptions): {
             chartData: any;
             defaulBuildertData: IScatterChartConfig;
         };

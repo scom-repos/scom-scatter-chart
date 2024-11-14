@@ -1,6 +1,5 @@
 export default {
   defaultBuilderData: {
-    // apiEndpoint: "/dune/query/2360905",
     "mode": "Live",
     "dataSource": "Dune",
     "queryId": "2360905",
