@@ -17,9 +17,9 @@ export default class Module1 extends Module {
             <i-scom-scatter-chart
                 margin={{ left: 'auto', right: 'auto' }}
                 data={{
-                    dataSource: 'Custom',
+                    dataSource: 'Dune',
                     mode: ModeType.LIVE,
-                    apiEndpoint: 'https://api.dune.com/api/v1/query/3865244/results?api_key=',
+                    queryId: '3865244',
                     title: 'MEV Blocks Trend by Builders',
                     options: {
                         xColumn: {

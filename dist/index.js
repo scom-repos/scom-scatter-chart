@@ -14,7 +14,6 @@ define("@scom/scom-scatter-chart/data.json.ts", ["require", "exports"], function
     ///<amd-module name='@scom/scom-scatter-chart/data.json.ts'/> 
     exports.default = {
         defaultBuilderData: {
-            // apiEndpoint: "/dune/query/2360905",
             "mode": "Live",
             "dataSource": "Dune",
             "queryId": "2360905",
@@ -1574,8 +1573,9 @@ define("@scom/scom-scatter-chart", ["require", "exports", "@ijstech/components",
                 embededSchema: (0, formSchema_1.getEmbedderSchema)(columns)
             };
         }
-        getChartData() {
-            const { options } = this.model.getData();
+        getChartData(options) {
+            if (!options)
+                return;
             const { xColumn, yColumns, groupBy, seriesOptions, smooth, mergeDuplicateData, stacking, legend, showSymbol, showDataLabels, percentage, xAxis, yAxis, padding = {} } = options;
             const { key, type, timeFormat } = xColumn;
             let _legend = {

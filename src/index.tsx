@@ -62,8 +62,8 @@ export default class ScomScatterChart extends ScomCharts<IScatterChartOptions> i
     }
   }
 
-  getChartData() {
-    const { options } = this.model.getData();
+  getChartData(options?: IScatterChartOptions) {
+    if (!options) return;
     const { xColumn, yColumns, groupBy, seriesOptions, smooth, mergeDuplicateData, stacking, legend, showSymbol, showDataLabels, percentage, xAxis, yAxis, padding = {} } = options;
     const { key, type, timeFormat } = xColumn;
     let _legend = {
